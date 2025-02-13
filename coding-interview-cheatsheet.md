@@ -157,3 +157,29 @@ def sort_ascii(s: str) -> str:
 
 Counting sort is a special case of Radix sort. Radix sort would move items into buckets by
 iterating through the input sequence.
+
+## Math
+
+- Exponentiation: `**`, `pow(base, exponent)`
+- Sqrt: `4 ** .5`, `math.sqrt(4)`
+- Complex numbers: `5 + 1j * 3`
+- To Integer: `5 // 2`, `math.floor(3.5)`
+- Trig: `math.sin()`, `math.cosh()`
+- Combinatorics: `itertools.combinations(iterable, r)`, `math.perm(n, k)`, `math.factorial(n)`
+
+## Unit Tests
+
+Many coding interviews like to see basic unit testing.
+
+```python
+import unittest
+
+class TestFoo(unittest.TestCase):
+    def test_condition_one(self):
+        # code under test
+        actual = (lambda: 'a')()
+        self.assertEqual(actual, 'a')
+
+if __name__ == '__main__':
+    unittest.main()
+```
