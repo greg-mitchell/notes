@@ -63,30 +63,40 @@ to ASCII.
 
 ## Grids
 
-Many problems involve parsing and operating on 2D grids. For data modeling, see the example in [Types](python-types.md#grid-example).
+Many problems involve parsing and operating on 2D grids. For data modeling, see the example in [Types](python-types.md#grid-example). Generally these grids easy to work with as an `m x n`
+matrix, where `m` is the number of rows, and `n` is the number of columns. There are two reasonable ways to represent a grid.
 
-### Jagged Grid Parsing
+- Dense Matrix: A multidimensional array, with a slot per cell. Consumes `O(m * n)` space. Best when:
+  - The entire matrix can fit in memory. It's particularly efficient if it fits in cache.
+  - There is no good default value, or each cell has a unique value.
+- Sparse Matrix: A mapping from coordinate to value. Consumes `O(m * n)` space worst case,
+  but it's more helpful to think of it as linear in the number of non-default cells. Best when:
+  - The matrix is mostly empty or default.
+  - The matrix is too large to fit in memory.
 
-The most common representation is a row-major jagged array, i.e. each row is a list.
-Assuming the grid is a multiline string `s` with possible whitespace between cells,
-and each cell is a number.
+### Dense Matrix
 
-This representation consumes `O(m * n)` space, where `m` is the number of rows, and `n` is the
-number of columns.
+The most common representation is a row-major 2D array, which in Python is implemented as
+a jagged array, i.e. each row is a list. Assuming the grid is a multiline string `s`
+with possible whitespace between cells, and each cell is a number:
 
 ```python
 [[int(c) for c in row.split()] for row in s.strip().splitlines()]
 ```
 
-### Complex Number Representation
+### Sparse Matrix
+
+The `collections.defaultdict` container is extremely helpful. Python containers default to value
+equality, so you can construct a tuple or list as the key like `(row, col)` to look up a value.
+
+#### Complex Number Representation
 
 An alternative that's well suited to sparse matrices, especially when you have to examine neighbors,
 is to represent the matrix as a dictionary of complex numbers to value, where the complex number
-is a position.
+is a position. This simplifies finding neighbors: add a basis vector to the position.
 
-Finding neighbors simple: add a basis vector to the position.
-
-This consumes `O(v)` space, where `v` is the number of non-default values in the `m x n` matrix.
+Note that Python complex number literals are written as `real + 1j * imag`, where `j` is the
+imaginary number typically written as `i`.
 
 ```python
 from collections import defaultdict
