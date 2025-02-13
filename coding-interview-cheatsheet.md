@@ -47,7 +47,7 @@ canonical order by sorting lexographically.
 A common problem is to identify anagrams for a sequence of strings, length n, where each string
 is of at most length m.
 
-- Runtime `O(n log (n) * m log(m))`
+- Runtime `O(n log (n) + n * m log(m))`. The problem may have assumptions like `n >> m` that would allow simplification.
 
 ```python
 ss = ['abc', 'bca', 'lol']
