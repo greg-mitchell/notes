@@ -183,3 +183,169 @@ class TestFoo(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 ```
+
+
+## Data Structures
+
+```python
+# Hash Maps for O(1) lookups
+from collections import defaultdict, Counter
+counts = Counter(['a', 'a', 'b'])  # Counter({'a': 2, 'b': 1})
+graph = defaultdict(list)  # Automatic initialization of empty lists
+
+# Heaps for priority queues
+import heapq
+heap = []
+heapq.heappush(heap, (priority, item))
+priority, item = heapq.heappop(heap)
+
+# Deque for O(1) operations at both ends
+from collections import deque
+queue = deque()
+queue.append(x)      # Add right
+queue.appendleft(x)  # Add left
+queue.pop()          # Remove right
+queue.popleft()      # Remove left
+```
+
+## Graphs
+
+```python
+# BFS Template
+def bfs(graph, start):
+    queue = deque([start])
+    seen = {start}
+    while queue:
+        node = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in seen:
+                seen.add(neighbor)
+                queue.append(neighbor)
+
+# DFS Template
+def dfs(graph, node, seen=None):
+    if seen is None:
+        seen = set()
+    seen.add(node)
+    for neighbor in graph[node]:
+        if neighbor not in seen:
+            dfs(graph, neighbor, seen)
+```
+
+## Binary Tree Operations
+
+```python
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+# Inorder traversal
+def inorder(root):
+    if not root:
+        return
+    inorder(root.left)
+    print(root.val)
+    inorder(root.right)
+
+# Level order traversal
+def level_order(root):
+    if not root:
+        return []
+    result = []
+    queue = deque([root])
+    while queue:
+        level = []
+        for _ in range(len(queue)):
+            node = queue.popleft()
+            level.append(node.val)
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        result.append(level)
+    return result
+```
+
+## Dynamic Programming
+
+```python
+# Top-down with memoization
+def fibonacci(n, memo=None):
+    if memo is None:
+        memo = {}
+    if n in memo:
+        return memo[n]
+    if n <= 1:
+        return n
+    memo[n] = fibonacci(n-1, memo) + fibonacci(n-2, memo)
+    return memo[n]
+
+# Bottom-up tabulation
+def fibonacci_bottom_up(n):
+    if n <= 1:
+        return n
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i-1] + dp[i-2]
+    return dp[n]
+```
+
+## Bit Manipulation
+
+```python
+# Common operations
+n & (n-1)    # Remove rightmost set bit
+n & -n       # Isolate rightmost set bit
+x ^ y        # XOR for finding unique elements
+n >> 1       # Divide by 2
+n << 1       # Multiply by 2
+bin(n).count('1')  # Count set bits
+```
+
+## Two Pointers Technique
+
+```python
+def two_sum_sorted(numbers, target):
+    left, right = 0, len(numbers) - 1
+    while left < right:
+        curr_sum = numbers[left] + numbers[right]
+        if curr_sum == target:
+            return [left, right]
+        elif curr_sum < target:
+            left += 1
+        else:
+            right -= 1
+```
+
+## Common Built-in Functions and their Complexity
+
+```python
+# List operations
+arr.sort()           # O(n log n)
+sorted(arr)          # O(n log n)
+arr.reverse()        # O(n)
+reversed(arr)        # O(1) - returns iterator
+arr.insert(i, x)     # O(n)
+bisect.bisect_left(arr, x)  # O(log n) for binary search
+
+# Set operations
+s1 & s2              # Intersection
+s1 | s2              # Union
+s1 - s2              # Difference
+s1 ^ s2              # Symmetric difference
+```
+
+## Time/Space Complexity Guide
+
+```
+# Common time complexities
+O(1)        # Constant: hash table lookups
+O(log n)    # Logarithmic: binary search
+O(n)        # Linear: single loop
+O(n log n)  # Linearithmic: sorting
+O(n²)       # Quadratic: nested loops
+O(2ⁿ)       # Exponential: recursive without memoization
+```
