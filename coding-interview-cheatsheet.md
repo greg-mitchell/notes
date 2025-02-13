@@ -61,6 +61,76 @@ This implementation is simple but inefficient: it sorts each string twice, and o
 are amenable to a linear sort algorithm, [Counting Sort](#counting-sort), for example if limited
 to ASCII.
 
+## Grids
+
+Many problems involve parsing and operating on 2D grids. For data modeling, see the example in [Types](python-types.md#grid-example).
+
+### Jagged Grid Parsing
+
+The most common representation is a row-major jagged array, i.e. each row is a list.
+Assuming the grid is a multiline string `s` with possible whitespace between cells,
+and each cell is a number.
+
+This representation consumes `O(m * n)` space, where `m` is the number of rows, and `n` is the
+number of columns.
+
+```python
+[[int(c) for c in row.split()] for row in s.strip().splitlines()]
+```
+
+### Complex Number Representation
+
+An alternative that's well suited to sparse matrices, especially when you have to examine neighbors,
+is to represent the matrix as a dictionary of complex numbers to value, where the complex number
+is a position.
+
+Finding neighbors simple: add a basis vector to the position.
+
+This consumes `O(v)` space, where `v` is the number of non-default values in the `m x n` matrix.
+
+```python
+from collections import defaultdict
+from collections.abc import Mapping
+
+type Pos = complex
+type Val = str
+
+# Uses None as the default value
+g: Mapping[Pos, Val] = defaultdict()
+
+# some 2D grid where '.' represents empty
+s = """
+a..
+.bc
+"""
+
+dim = (2,3)
+
+for i, row in enumerate(s.strip().splitlines()):
+    for j, v in enumerate(row):
+        if v == '.':
+            continue
+        g[i + 1j * j] = v
+
+nondiag_neighbor_basis_vecs = [
+    -1j,    # left
+    +1j,    # right
+    -1+0j,  # up
+    +1+0j,  # down
+]
+
+count_items_with_neighbors = 0
+for pos, val in g.items():
+    neighbors = [g[pos + basis]
+        for basis in nondiag_neighbor_basis_vecs
+        if (pos + basis) in g
+    ]
+    print(pos, neighbors)
+    count_items_with_neighbors += len(neighbors)
+
+print(count_items_with_neighbors)
+```
+
 ## Sorting
 
 ### Counting Sort

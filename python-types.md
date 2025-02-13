@@ -19,6 +19,8 @@ Problems often involve some amount of data modeling. The main options are:
     constructors / validators.
 - Type Alias: for shortening long generic types
 
+### Grid Example
+
 In this example, the classes:
 
 - `namedtuple` for a 2d vector in cartesian coordinates. The fields `x` and `y` can be referred
