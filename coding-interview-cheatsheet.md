@@ -184,7 +184,6 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-
 ## Data Structures
 
 ```python
@@ -210,50 +209,144 @@ queue.popleft()      # Remove left
 
 ## Graphs
 
+Graphs are common for problems about relationships between entities, and for networks (like roads).
+Generally, graphs have a set of Vertices **V** and Edges **E** between those vertices, or
+equivalently nodes and arcs. Common properties of graphs:
+
+- Undirected vs Directed
+- Weighted
+- Acyclic. Implies sparsity.
+- Dense or complete. Implies cycles.
+
+### Adjacency List & Matrix
+
+The most common representation is an adjacency list, which is space efficient for sparse
+graphs and supports efficient iteration through neighbors. This requires that Node be hashable.
+If it's not, you can define an ordering and use the index.
+
+- Space `O(V + E)`
+
 ```python
-# BFS Template
-def bfs(graph, start):
-    queue = deque([start])
-    seen = {start}
+type Node = any
+type Graph = dict[Node, list[Node]]
+```
+
+Adjacency Matrices are more space efficient for dense graphs, since `|E| <= |V|**2`. Typically
+you define an ordering over the vertices, then build a `V x V` boolean matrix, where `True` marks
+an edge.
+
+The following algorithms assume we're using the above Adjacency List representation.
+
+### Search
+
+This is the problem of finding a path from source to target in the graph, used as the basis for
+many algorithms which build orderings from graphs. The complexity of BFS and DFS are the same,
+but they have different applications.
+
+- Runtime: `O(V + E)`
+- Space: `O(V)`
+
+#### BFS
+
+- Processes nodes in level order and guarantees finding the shortest path if one exists.
+- Better for infinite graphs with bounded degree, like games.
+
+```python
+def bfs(graph: Graph, source: Node, target: Node) -> bool:
+    queue: deque[Node] = deque([source])
+    seen: set[Node] = {source}
     while queue:
-        node = queue.popleft()
+        node = queue.popleft()  # only difference from DFS
+        if node == target:
+            return True
         for neighbor in graph[node]:
             if neighbor not in seen:
                 seen.add(neighbor)
                 queue.append(neighbor)
-
-# DFS Template
-def dfs(graph, node, seen=None):
-    if seen is None:
-        seen = set()
-    seen.add(node)
-    for neighbor in graph[node]:
-        if neighbor not in seen:
-            dfs(graph, neighbor, seen)
+    return False
 ```
 
-## Binary Tree Operations
+#### DFS
+
+- Processes each path to the end.
+- Basis for heuristic-based approaches to speed up graph exploration, like A*.
+- Basis for finding a in-, pre-, post-, and toplogical ordering (reverse postorder).
 
 ```python
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+def dfs(graph: Graph, source: Node, target: Node) -> bool:
+    stack: deque[Node] = deque([source])
+    seen: set[Node] = {source}
+    while stack:
+        node = stack.pop()  # only difference from BFS
+        if node == target:
+            return True
+        for neighbor in graph[node]:
+            if neighbor not in seen:
+                seen.add(neighbor)
+                stack.append(neighbor)
+    return False
+```
 
-# Inorder traversal
-def inorder(root):
+It's common to see DFS implemented recursively, but since Python (and most non-functional languages)
+don't have tail-call recursion and have limited stack size and depth, that approach is less 
+preferred due to consuming stack frames, which could result in OOMs for large graphs even when
+there is plenty of system memory.
+
+### Binary Tree Operations
+
+Binary trees are DAGs that have 0 to 2 out edges (children), and each interior node is complete.
+The most common is a Binary Search Tree, a Binary tree where an inorder traversal of nodes visits
+them in sorted order. Equivalently, each left child is `<=` to its parent, and each right child is
+`>` its parent.
+
+The typical recursive definition is:
+
+```python
+from __future__ import annotations  # required for self-referential types
+from dataclasses import dataclass, field
+
+@dataclass
+class TreeNode:
+    val: any
+    left: TreeNode | None = None
+    right: TreeNode | None = None
+```
+
+A common operation is to define an ordering on a tree.
+
+#### Inorder / Preorder / Postorder Traversal
+
+This uses recursive DFS for simplicity, but nonrecursive works too.
+
+```python
+from collections.abc import Callable
+
+type Processor = Callable[[Node], None]
+
+def visit(
+    root: TreeNode | None,
+    preorder: Processor,
+    inorder: Processor,
+    postorder: Processor,
+) -> None:
     if not root:
         return
-    inorder(root.left)
-    print(root.val)
-    inorder(root.right)
+    preorder(root)
+    visit(root.left, preorder, inorder, postorder)
+    inorder(root)
+    visit(root.right, preorder, inorder, postorder)
+    postorder(root.right)
+```
 
-# Level order traversal
-def level_order(root):
+#### Level order traversal
+
+Basically BFS, where you return a list of each level.
+
+```python
+def level_order(root: TreeNode | None) -> list[list[Node]]:
     if not root:
         return []
-    result = []
+    result: list[list[Node]] = []
     queue = deque([root])
     while queue:
         level = []
@@ -295,6 +388,8 @@ def fibonacci_bottom_up(n):
 
 ## Bit Manipulation
 
+These operations only work on integers.
+
 ```python
 # Common operations
 n & (n-1)    # Remove rightmost set bit
@@ -305,7 +400,13 @@ n << 1       # Multiply by 2
 bin(n).count('1')  # Count set bits
 ```
 
-## Two Pointers Technique
+## Sum of Pairs / Two Pointers Technique
+
+A classic interview problem involving some condition about a pair of elements in an array.
+Naively, considering every pair of elements would take `O(n**2)` time. A more efficient approach
+is to define pointers at opposite ends of a sorted array, and move one or the other pointer inwards
+using the result of comparing the pair. This avoids considering impossible pairs, and has `O(n)`
+runtime.
 
 ```python
 def two_sum_sorted(numbers, target):
@@ -319,6 +420,12 @@ def two_sum_sorted(numbers, target):
         else:
             right -= 1
 ```
+
+Common twists on it include:
+
+- Find the closest to target: keep track of best so far.
+- Compare pairs from two arrays: combine into one sorted array, plus track the source for each
+  element.
 
 ## Common Built-in Functions and their Complexity
 
@@ -338,9 +445,12 @@ s1 - s2              # Difference
 s1 ^ s2              # Symmetric difference
 ```
 
+The sort operations all take a `key=` parameter, a function to extract the sort key from each
+element.
+
 ## Time/Space Complexity Guide
 
-```
+```text
 # Common time complexities
 O(1)        # Constant: hash table lookups
 O(log n)    # Logarithmic: binary search
