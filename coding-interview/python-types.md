@@ -15,8 +15,8 @@ int, float, str, dict, list, set, tuple
 Problems often involve some amount of data modeling. The main options are:
 
 - `namedtuple`: for simple, immutable data types, especially when tuple-like unpacking is helpful.
-- `@dataclass`: for mutable value-equality types, especially when you want methods or custom 
-    constructors / validators.
+- `@dataclass`: for mutable value-equality types, especially when you want methods or custom
+  constructors / validators.
 - Type Alias: for shortening long generic types
 
 ### Grid Example
