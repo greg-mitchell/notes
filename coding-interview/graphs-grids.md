@@ -31,6 +31,32 @@ Adjacency Matrices are more space efficient for dense graphs, since `|E| <= |V|*
 you define an ordering over the vertices, then build a `V x V` boolean matrix, where `True` marks
 an edge.
 
+#### Building an Adjacency List or Matrix
+
+Some problems will provide you with a the graph modeled list of edges which you will want to
+traverse. You can build the adjacency list or matrix by iterating over your edge list. The below
+example assumes an undirected, unweighted graph with edges modeled as [Node1_id, Node2_id]
+
+```python
+def build_adj_list(num_nodes: int, edges: List[List[int]]) -> List[List[int]]
+    adj_list = [[] for _ in range(num_nodes)]
+    for edge in edges:
+        adj_list[edge[0]].append(edge[1])
+        adj_list[edge[1]].append(edge[0])
+    return adj_list
+```
+
+To build the Matrix mentioned above you can use a similar pattern.
+
+```python
+def build_adj_matrix(num_nodes: int, edges: List[List[int]]) -> List[List[int]]
+    adj_matrix = [[False]*num_nodes for _ in range(num_nodes)]
+    for edge in edges:
+        adj_matrix[edge[0]][edge[1]] = True
+        adj_matrix[edge[1]][edge[0]] = True
+    return adj_matrix
+```
+
 The following algorithms assume we're using the above Adjacency List representation.
 
 ### Search
