@@ -33,9 +33,10 @@ an edge.
 
 #### Building an Adjacency List or Matrix
 
-Some problems will provide you with a the graph modeled list of edges which you will want to
-traverse. You can build the adjacency list or matrix by iterating over your edge list. The below
-example assumes an undirected, unweighted graph with edges modeled as [Node1_id, Node2_id]
+Some problems will provide you with a graph modeled as a list of edges which you will want to
+traverse. You can build the adjacency list or matrix by initializing a structure and then
+iterating over your edge list. The below example assumes an undirected, unweighted graph 
+with edges modeled as [Node1_id, Node2_id]
 
 ```python
 def build_adj_list(num_nodes: int, edges: List[List[int]]) -> List[List[int]]
